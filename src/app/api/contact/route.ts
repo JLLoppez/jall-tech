@@ -1,35 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { contactSchema } from '@/lib/schemas';
+import { sendEmail, contactNotificationEmail } from '@/lib/email';
+import { isRateLimited } from '@/lib/rate-limit';
 
-// --- Basic in-memory rate limiting -----------------------------------------
-// Limits repeat submissions per IP within a rolling window. This is a
-// best-effort guard, not a hard security boundary: on serverless platforms
-// (Vercel) each function instance has its own memory, so a determined bot
-// distributed across instances could get around it. For real production
-// traffic, swap this for Upstash Redis or Vercel KV-backed rate limiting.
 const WINDOW_MS = 10 * 60 * 1000; // 10 minutes
 const MAX_REQUESTS_PER_WINDOW = 5;
-const requestLog = new Map<string, number[]>();
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-  const timestamps = (requestLog.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
-  timestamps.push(now);
-  requestLog.set(ip, timestamps);
-  return timestamps.length > MAX_REQUESTS_PER_WINDOW;
-}
 
 function getClientIp(request: NextRequest): string {
   const forwarded = request.headers.get('x-forwarded-for');
   if (forwarded) return forwarded.split(',')[0].trim();
   return request.headers.get('x-real-ip') || 'unknown';
 }
-// -----------------------------------------------------------------------------
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
-  if (isRateLimited(ip)) {
+  if (isRateLimited(`contact:${ip}`, WINDOW_MS, MAX_REQUESTS_PER_WINDOW)) {
     return NextResponse.json(
       { error: 'Too many requests. Please try again in a few minutes.' },
       { status: 429 }
@@ -71,8 +57,21 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Optional: trigger an email notification here (e.g. via Resend, SendGrid, or Nodemailer)
-    // using process.env credentials configured in .env.
+    // Notify the team. Best-effort: a failed/unconfigured email never fails
+    // the request — the submission is already safely in the database and
+    // visible in /admin/messages either way. Awaited (not fire-and-forget)
+    // because serverless functions can be frozen/terminated before an
+    // un-awaited promise resolves.
+    const notifyTo = process.env.CONTACT_NOTIFICATION_EMAIL || 'hello@jalltechnologies.com';
+    try {
+      await sendEmail({
+        to: notifyTo,
+        subject: `New ${inquiryType.toLowerCase()} inquiry from ${name}`,
+        html: contactNotificationEmail({ name, email, company, inquiryType, message })
+      });
+    } catch (err) {
+      console.error('[contact] notification email failed:', err);
+    }
 
     return NextResponse.json({ success: true, id: submission.id }, { status: 201 });
   } catch (err) {

@@ -13,7 +13,7 @@ export default async function AdminBlogPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="mb-1">Blog Posts</h1>
           <p className="mb-0">{posts.length} post{posts.length === 1 ? '' : 's'} total.</p>

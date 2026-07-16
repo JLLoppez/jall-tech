@@ -32,13 +32,21 @@ export default async function AdminDashboard() {
       <p className="mb-8">Overview of everything happening on the platform.</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {stats.map((stat) => (
-          <Link key={stat.label} href={stat.href} className="card p-6 group">
+        {stats.map((stat, i) => (
+          <Link
+            key={stat.label}
+            href={stat.href}
+            className="card card-hover group p-6 animate-fade-in-up"
+            style={{ animationDelay: `${i * 50}ms` }}
+          >
             <div className="flex items-start justify-between mb-4">
-              <div className="h-10 w-10 rounded-lg bg-gray-light flex items-center justify-center">
-                <stat.icon size={18} className="text-midnight" />
+              <div className="h-10 w-10 rounded-lg bg-gray-light flex items-center justify-center transition-colors duration-200 group-hover:bg-midnight">
+                <stat.icon size={18} className="text-midnight transition-colors duration-200 group-hover:text-gold" />
               </div>
-              <ArrowUpRight size={16} className="text-gray-medium group-hover:text-midnight transition-colors" />
+              <ArrowUpRight
+                size={16}
+                className="text-gray-medium group-hover:text-midnight transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
             </div>
             <p className="font-heading font-bold text-3xl text-midnight mb-0.5">{stat.value}</p>
             <p className="text-sm font-medium text-gray-dark mb-0.5">{stat.label}</p>

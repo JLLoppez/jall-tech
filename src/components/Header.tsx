@@ -19,7 +19,11 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-100">
       <div className="container flex items-center justify-between h-[76px]">
-        <Link href="/" className="flex items-center gap-3 shrink-0" aria-label="Jall Technologies home">
+        <Link
+          href="/"
+          className="flex items-center gap-3 shrink-0 transition-opacity duration-200 hover:opacity-80"
+          aria-label="Jall Technologies home"
+        >
           <Logo className="h-10 w-10" />
           <span className="font-heading font-bold text-midnight leading-none">
             JALL
@@ -37,13 +41,16 @@ export default function Header() {
                 key={link.href}
                 href={link.href}
                 aria-current={active ? 'page' : undefined}
-                className={`px-4 py-2 rounded-md text-sm font-heading font-medium transition-colors ${
+                className={`relative px-4 py-2 rounded-md text-sm font-heading font-medium transition-colors duration-200 ${
                   active
                     ? 'text-midnight bg-gray-light'
                     : 'text-gray-medium hover:text-midnight hover:bg-gray-light'
                 }`}
               >
                 {link.label}
+                {active && (
+                  <span className="absolute left-4 right-4 -bottom-[1px] h-0.5 rounded-full bg-gold animate-scale-in" />
+                )}
               </Link>
             );
           })}
@@ -63,18 +70,32 @@ export default function Header() {
           aria-controls="mobile-nav"
           aria-label={open ? 'Close menu' : 'Open menu'}
         >
-          {open ? <X size={24} /> : <Menu size={24} />}
+          <span className="relative block h-6 w-6">
+            <Menu
+              size={24}
+              className={`absolute inset-0 transition-all duration-200 ${open ? 'opacity-0 rotate-90 scale-75' : 'opacity-100 rotate-0 scale-100'}`}
+            />
+            <X
+              size={24}
+              className={`absolute inset-0 transition-all duration-200 ${open ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-75'}`}
+            />
+          </span>
         </button>
       </div>
 
       {open && (
-        <nav id="mobile-nav" aria-label="Mobile" className="lg:hidden border-t border-gray-100 bg-white">
+        <nav
+          id="mobile-nav"
+          aria-label="Mobile"
+          className="lg:hidden border-t border-gray-100 bg-white animate-fade-in-down origin-top"
+        >
           <div className="container py-4 flex flex-col gap-1">
-            {navLinks.map((link) => (
+            {navLinks.map((link, i) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-3 py-3 rounded-md text-base font-heading font-medium ${
+                style={{ animationDelay: `${i * 30}ms` }}
+                className={`px-3 py-3 rounded-md text-base font-heading font-medium transition-colors duration-150 active:bg-gray-light animate-fade-in-up ${
                   pathname === link.href ? 'text-midnight bg-gray-light' : 'text-gray-medium'
                 }`}
               >

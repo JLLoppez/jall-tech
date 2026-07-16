@@ -1,75 +1,52 @@
 import type { Metadata } from 'next';
-import type { ReactNode } from 'react';
-import { Poppins, Inter, JetBrains_Mono } from 'next/font/google';
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Sora, Inter } from 'next/font/google';
 import './globals.css';
 
-const poppins = Poppins({
+const heading = Sora({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-poppins',
+  weight: ['500', '600', '700', '800'],
+  variable: '--font-heading',
   display: 'swap'
 });
 
-const inter = Inter({
+const body = Inter({
   subsets: ['latin'],
-  variable: '--font-inter',
+  weight: ['400', '500', '600'],
+  variable: '--font-body',
   display: 'swap'
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-jetbrains',
-  display: 'swap'
-});
+const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://jalltechnologies.com';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
-    default: 'Jall Technologies | Innovate. Build. Empower.',
+    default: 'Jall Technologies — Software, AI & Fintech Solutions',
     template: '%s | Jall Technologies'
   },
   description:
-    'Jall Technologies builds innovative software, AI, cloud, and digital solutions that empower businesses, governments, and NGOs across Africa and beyond.',
-  keywords: [
-    'Jall Technologies',
-    'software development Africa',
-    'AI automation',
-    'custom software Cape Town',
-    'fintech development'
-  ],
-  icons: {
-    icon: [
-      { url: '/favicon.ico', sizes: 'any' },
-      { url: '/icon-16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/icon-32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' }
-    ],
-    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }]
-  },
-  manifest: '/site.webmanifest',
+    'Jall Technologies builds custom software, AI & automation, cloud infrastructure, and fintech products for clients across Africa and beyond.',
   openGraph: {
-    title: 'Jall Technologies | Innovate. Build. Empower.',
+    type: 'website',
+    siteName: 'Jall Technologies',
+    title: 'Jall Technologies',
     description:
-      'Custom software, AI & automation, cloud, and fintech solutions built for Africa and beyond.',
-    type: 'website'
-  }
+      'Custom software, AI & automation, cloud infrastructure, and fintech solutions.'
+  },
+  robots: { index: true, follow: true }
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${poppins.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${heading.variable} ${body.variable}`}>
       <body>
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-white focus:text-midnight focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:bg-midnight focus:text-white focus:px-4 focus:py-2 focus:rounded-md"
         >
-          Skip to content
+          Skip to main content
         </a>
         {children}
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   );

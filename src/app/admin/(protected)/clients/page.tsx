@@ -14,7 +14,7 @@ export default async function AdminClientsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="mb-1">Clients</h1>
           <p className="mb-0">{clients.length} client account{clients.length === 1 ? '' : 's'} with portal access.</p>

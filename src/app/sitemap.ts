@@ -1,13 +1,28 @@
 import type { MetadataRoute } from 'next';
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.NEXT_PUBLIC_SITE_URL || 'https://jalltechnologies.com';
-  const routes = ['', '/about', '/services', '/products', '/case-studies', '/blog', '/careers', '/contact'];
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://jalltechnologies.com';
 
-  return routes.map((route) => ({
-    url: `${base}${route}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly',
-    priority: route === '' ? 1 : 0.7
+  const staticRoutes = [
+    '',
+    '/services',
+    '/products',
+    '/case-studies',
+    '/about',
+    '/blog',
+    '/careers',
+    '/contact',
+    '/privacy',
+    '/terms'
+  ].map((path) => ({
+    url: `${baseUrl}${path}`,
+    lastModified: new Date()
   }));
+
+  // NOTE: blog post and case study detail pages (/blog/[slug],
+  // /case-studies/[slug]) don't exist yet — the listing pages currently
+  // show summaries only, by design (see the comment in blog/page.tsx).
+  // Once those detail routes are built, list published posts/case studies
+  // here individually. Until then, only the static routes are real URLs.
+  return staticRoutes;
 }

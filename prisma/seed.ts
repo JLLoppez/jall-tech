@@ -88,7 +88,7 @@ async function main() {
       slug: 'welcome-to-jall-technologies',
       title: 'Welcome to Jall Technologies',
       excerpt:
-        'Why we started Jall Technologies, and what we\u2019re building across software, AI, and fintech.',
+        'Why we started Jall Technologies, and what we’re building across software, AI, and fintech.',
       content: 'Full post content goes here.',
       author: 'Jall Technologies Team',
       category: 'Company',

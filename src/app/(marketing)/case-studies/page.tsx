@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 import { products } from '@/lib/data/products';
 import { Briefcase } from 'lucide-react';
+import Reveal from '@/components/Reveal';
 
 export const metadata: Metadata = {
   title: 'Case Studies',
@@ -17,7 +18,7 @@ async function getCaseStudies() {
       orderBy: { createdAt: 'desc' }
     });
   } catch {
-    // DATABASE_URL not configured yet in this environment \u2014 fall back to an empty state.
+    // DATABASE_URL not configured yet in this environment — fall back to an empty state.
     return [];
   }
 }
@@ -29,9 +30,11 @@ export default async function CaseStudiesPage() {
     <>
       <section className="bg-midnight">
         <div className="container py-20 max-w-3xl">
-          <span className="eyebrow">Case Studies</span>
-          <h1 className="text-white mb-6">Real problems, real builds</h1>
-          <p className="text-white/70 text-lg leading-relaxed">
+          <span className="eyebrow animate-fade-in-up">Case Studies</span>
+          <h1 className="text-white mb-6 animate-fade-in-up" style={{ animationDelay: '80ms' }}>
+            Real problems, real builds
+          </h1>
+          <p className="text-white/70 text-lg leading-relaxed animate-fade-in-up" style={{ animationDelay: '160ms' }}>
             Detailed write-ups of client and product work are added here as engagements wrap
             and clients approve publication.
           </p>
@@ -41,7 +44,7 @@ export default async function CaseStudiesPage() {
       <section className="section">
         <div className="container">
           {caseStudies.length === 0 ? (
-            <div className="text-center max-w-lg mx-auto py-12">
+            <Reveal className="text-center max-w-lg mx-auto py-12">
               <div className="h-16 w-16 rounded-full bg-gray-light flex items-center justify-center mx-auto mb-5">
                 <Briefcase className="text-gray-medium" size={26} />
               </div>
@@ -50,23 +53,25 @@ export default async function CaseStudiesPage() {
                 We&apos;re finishing up our first published case studies across
                 {' '}
                 {products.map((p) => p.name).join(', ')}. Check back soon, or{' '}
-                <a href="/contact" className="text-sky underline">
+                <a href="/contact" className="text-sky underline hover:text-midnight transition-colors">
                   get in touch
                 </a>{' '}
                 if you&apos;d like references in the meantime.
               </p>
-            </div>
+            </Reveal>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {caseStudies.map((cs) => (
-                <article key={cs.id} className="card p-7">
-                  <span className="badge bg-gray-light text-gray-dark mb-4">{cs.industry}</span>
-                  <h3 className="mb-2">{cs.title}</h3>
-                  <p className="text-sm text-gray-medium mb-3">{cs.summary}</p>
-                  <p className="text-xs font-heading font-semibold text-midnight mb-0">
-                    {cs.clientName}
-                  </p>
-                </article>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {caseStudies.map((cs, i) => (
+                <Reveal key={cs.id} delay={i * 60}>
+                  <article className="card p-7 h-full">
+                    <span className="badge bg-gray-light text-gray-dark mb-4">{cs.industry}</span>
+                    <h3 className="mb-2">{cs.title}</h3>
+                    <p className="text-sm text-gray-medium mb-3">{cs.summary}</p>
+                    <p className="text-xs font-heading font-semibold text-midnight mb-0">
+                      {cs.clientName}
+                    </p>
+                  </article>
+                </Reveal>
               ))}
             </div>
           )}

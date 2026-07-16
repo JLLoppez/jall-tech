@@ -8,8 +8,11 @@ export const metadata = { title: 'Sign In' };
 export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-gray-light flex items-center justify-center p-6">
-      <div className="w-full max-w-sm">
-        <Link href="/" className="flex items-center justify-center gap-3 mb-8">
+      <div className="w-full max-w-sm animate-fade-in-up">
+        <Link
+          href="/"
+          className="flex items-center justify-center gap-3 mb-8 transition-opacity duration-200 hover:opacity-80"
+        >
           <Logo className="h-11 w-11" />
           <span className="font-heading font-bold text-midnight leading-none">
             JALL
@@ -23,7 +26,7 @@ export default function AdminLoginPage() {
           <LoginForm />
         </Suspense>
         <p className="text-center text-xs text-gray-medium mt-6">
-          <Link href="/" className="hover:text-midnight">&larr; Back to the website</Link>
+          <Link href="/" className="hover:text-midnight transition-colors duration-150">&larr; Back to the website</Link>
         </p>
       </div>
     </div>

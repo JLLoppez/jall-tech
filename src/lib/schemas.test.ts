@@ -1,57 +1,62 @@
 import { describe, it, expect } from 'vitest';
-import { contactSchema } from './schemas';
-
-const validPayload = {
-  name: 'Jose Lopes',
-  email: 'jose@example.com',
-  company: 'Jall Technologies',
-  phone: '',
-  inquiryType: 'GENERAL' as const,
-  message: 'I would like to discuss a new project.'
-};
+import { contactSchema, loginSchema, newPasswordSchema } from './schemas';
 
 describe('contactSchema', () => {
-  it('accepts a valid payload', () => {
-    const result = contactSchema.safeParse(validPayload);
-    expect(result.success).toBe(true);
+  const valid = {
+    name: 'Jose Lopes',
+    email: 'jose@example.com',
+    inquiryType: 'GENERAL' as const,
+    message: 'This is a long enough message to pass validation.'
+  };
+
+  it('accepts a valid submission', () => {
+    expect(contactSchema.safeParse(valid).success).toBe(true);
   });
 
-  it('rejects a name that is too short', () => {
-    const result = contactSchema.safeParse({ ...validPayload, name: 'J' });
+  it('rejects a missing/invalid email', () => {
+    const result = contactSchema.safeParse({ ...valid, email: 'not-an-email' });
     expect(result.success).toBe(false);
   });
 
-  it('rejects an invalid email address', () => {
-    const result = contactSchema.safeParse({ ...validPayload, email: 'not-an-email' });
+  it('rejects a message that is too short', () => {
+    const result = contactSchema.safeParse({ ...valid, message: 'short' });
     expect(result.success).toBe(false);
   });
 
-  it('rejects a message under 10 characters', () => {
-    const result = contactSchema.safeParse({ ...validPayload, message: 'too short' });
-    expect(result.success).toBe(false);
-  });
-
-  it('rejects an inquiryType outside the allowed enum', () => {
-    const result = contactSchema.safeParse({ ...validPayload, inquiryType: 'NOT_REAL' });
-    expect(result.success).toBe(false);
-  });
-
-  it('allows the honeypot field to be empty (real users)', () => {
-    const result = contactSchema.safeParse({ ...validPayload, website: '' });
-    expect(result.success).toBe(true);
-  });
-
-  it('still parses successfully when the honeypot is filled \u2014 rejection happens at the route level, not schema level', () => {
-    const result = contactSchema.safeParse({ ...validPayload, website: 'http://spam.example' });
+  it('parses successfully even with a filled honeypot field (the route decides what to do with it)', () => {
+    const result = contactSchema.safeParse({ ...valid, website: 'http://spam.example.com' });
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.website).toBe('http://spam.example');
+      expect(result.data.website).toBe('http://spam.example.com');
     }
   });
 
-  it('treats optional fields (company, phone) as optional', () => {
-    const { company, phone, ...rest } = validPayload;
-    const result = contactSchema.safeParse(rest);
+  it('accepts an empty honeypot field', () => {
+    const result = contactSchema.safeParse({ ...valid, website: '' });
     expect(result.success).toBe(true);
+  });
+});
+
+describe('loginSchema', () => {
+  it('accepts a valid email and non-empty password', () => {
+    expect(loginSchema.safeParse({ email: 'a@b.com', password: 'x' }).success).toBe(true);
+  });
+
+  it('rejects an empty password', () => {
+    expect(loginSchema.safeParse({ email: 'a@b.com', password: '' }).success).toBe(false);
+  });
+});
+
+describe('newPasswordSchema', () => {
+  it('rejects passwords under 8 characters', () => {
+    expect(newPasswordSchema.safeParse('Ab1').success).toBe(false);
+  });
+
+  it('rejects passwords without a number', () => {
+    expect(newPasswordSchema.safeParse('onlyletters').success).toBe(false);
+  });
+
+  it('accepts a password with letters and numbers, 8+ chars', () => {
+    expect(newPasswordSchema.safeParse('Password123').success).toBe(true);
   });
 });

@@ -24,7 +24,7 @@ export default function SubmissionStatusSelect({
           updateSubmissionStatus(id, e.target.value as InquiryStatus);
         })
       }
-      className="text-xs font-heading font-semibold border border-gray-200 rounded-md px-2 py-1.5 bg-white disabled:opacity-50"
+      className="text-xs font-heading font-semibold border border-gray-200 rounded-md px-2 py-1.5 bg-white transition-colors duration-150 hover:border-gray-300 focus:border-sky disabled:opacity-50"
     >
       {options.map((opt) => (
         <option key={opt} value={opt}>

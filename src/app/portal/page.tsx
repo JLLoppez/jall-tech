@@ -1,6 +1,7 @@
+import Link from 'next/link';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import { FolderKanban, Clock } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 export const metadata = { title: 'My Projects' };
 export const dynamic = 'force-dynamic';
@@ -13,82 +14,50 @@ const statusColor: Record<string, string> = {
   ON_HOLD: 'bg-red-50 text-danger'
 };
 
-export default async function PortalPage() {
+export default async function PortalDashboard() {
   const session = await auth();
-  if (!session) return null; // layout already redirects; this satisfies TS
+  // Layout already guarantees a CLIENT session exists before this renders.
+  const clientId = session!.user.id;
 
   const projects = await prisma.project.findMany({
-    where: { clientId: session.user.id },
+    where: { clientId },
     orderBy: { updatedAt: 'desc' },
-    include: { updates: { orderBy: { createdAt: 'desc' }, take: 5 } }
+    include: { updates: { orderBy: { createdAt: 'desc' }, take: 1 } }
   });
 
   return (
     <div>
-      <h1 className="mb-1">Welcome back, {session.user.name?.split(' ')[0]}</h1>
-      <p className="mb-10">Here&apos;s where things stand on your project{projects.length === 1 ? '' : 's'}.</p>
+      <h1 className="mb-1">My Projects</h1>
+      <p className="mb-8">Track progress and updates on your projects with Jall Technologies.</p>
 
       {projects.length === 0 ? (
-        <div className="card p-10 text-center max-w-lg">
-          <FolderKanban className="text-gray-medium mx-auto mb-4" size={26} />
-          <h3 className="mb-2">No projects yet</h3>
-          <p className="mb-0">
-            Your project dashboard will appear here once we kick things off. Reach out if you
-            were expecting to see something already.
-          </p>
+        <div className="card p-10 text-center text-gray-medium">
+          No projects yet. Once we kick off work together, it will show up here.
         </div>
       ) : (
-        <div className="space-y-8">
-          {projects.map((project) => (
-            <div key={project.id} className="card p-7">
-              <div className="flex items-start justify-between mb-4 gap-4">
-                <div>
-                  <h3 className="mb-1">{project.name}</h3>
-                  {project.description && (
-                    <p className="text-sm text-gray-medium mb-0">{project.description}</p>
-                  )}
-                </div>
-                <span className={`badge shrink-0 ${statusColor[project.status]}`}>
-                  {project.status.replace('_', ' ')}
-                </span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          {projects.map((p, i) => (
+            <Link
+              key={p.id}
+              href={`/portal/projects/${p.id}`}
+              className="card card-hover p-6 animate-fade-in-up"
+              style={{ animationDelay: `${i * 50}ms` }}
+            >
+              <div className="flex items-start justify-between mb-3 gap-3">
+                <h3 className="mb-0">{p.name}</h3>
+                <ArrowUpRight size={16} className="text-gray-medium shrink-0" />
               </div>
-
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xs font-heading font-semibold uppercase tracking-wide text-gray-medium">
-                    Progress
-                  </span>
-                  <span className="text-xs font-heading font-semibold text-midnight">{project.progress}%</span>
-                </div>
-                <div className="h-2 bg-gray-light rounded-full overflow-hidden">
-                  <div className="h-full bg-gold transition-all" style={{ width: `${project.progress}%` }} />
-                </div>
+              <span className={`badge mb-4 ${statusColor[p.status]}`}>{p.status.replace('_', ' ')}</span>
+              <div className="h-1.5 bg-gray-light rounded-full overflow-hidden">
+                <div className="h-full bg-gold transition-[width] duration-700 ease-smooth" style={{ width: `${p.progress}%` }} />
               </div>
-
-              {project.updates.length > 0 && (
-                <div>
-                  <p className="text-xs font-heading font-semibold uppercase tracking-wide text-gray-medium mb-3">
-                    Recent updates
-                  </p>
-                  <div className="space-y-3">
-                    {project.updates.map((u) => (
-                      <div key={u.id} className="flex gap-3 border-l-2 border-gold-100 pl-4">
-                        <div>
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <p className="font-heading font-semibold text-sm text-midnight mb-0">{u.title}</p>
-                            <span className="flex items-center gap-1 text-xs text-gray-medium">
-                              <Clock size={11} />
-                              {u.createdAt.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short' })}
-                            </span>
-                          </div>
-                          <p className="text-sm text-gray-medium mb-0">{u.body}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              <p className="text-xs text-gray-medium mt-1.5 mb-0">{p.progress}% complete</p>
+              {p.updates[0] && (
+                <p className="text-xs text-gray-medium mt-3 mb-0 line-clamp-1">
+                  Latest: {p.updates[0].title}
+                </p>
               )}
-            </div>
+            </Link>
           ))}
         </div>
       )}

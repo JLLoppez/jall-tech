@@ -13,7 +13,7 @@ export default async function AdminJobsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="mb-1">Job Postings</h1>
           <p className="mb-0">{jobs.length} posting{jobs.length === 1 ? '' : 's'} total.</p>

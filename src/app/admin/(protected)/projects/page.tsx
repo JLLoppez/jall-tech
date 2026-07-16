@@ -21,7 +21,7 @@ export default async function AdminProjectsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="mb-1">Projects</h1>
           <p className="mb-0">{projects.length} project{projects.length === 1 ? '' : 's'} across all clients.</p>
@@ -37,15 +37,20 @@ export default async function AdminProjectsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {projects.map((p) => (
-            <Link key={p.id} href={`/admin/projects/${p.id}`} className="card p-6">
-              <div className="flex items-start justify-between mb-3">
+          {projects.map((p, i) => (
+            <Link
+              key={p.id}
+              href={`/admin/projects/${p.id}`}
+              className="card card-hover p-6 animate-fade-in-up"
+              style={{ animationDelay: `${i * 50}ms` }}
+            >
+              <div className="flex items-start justify-between mb-3 gap-3">
                 <h3 className="mb-0">{p.name}</h3>
-                <span className={`badge ${statusColor[p.status]}`}>{p.status.replace('_', ' ')}</span>
+                <span className={`badge shrink-0 ${statusColor[p.status]}`}>{p.status.replace('_', ' ')}</span>
               </div>
               <p className="text-sm text-gray-medium mb-4">{p.client.name} &middot; {p.client.email}</p>
               <div className="h-1.5 bg-gray-light rounded-full overflow-hidden">
-                <div className="h-full bg-gold" style={{ width: `${p.progress}%` }} />
+                <div className="h-full bg-gold transition-[width] duration-700 ease-smooth" style={{ width: `${p.progress}%` }} />
               </div>
               <p className="text-xs text-gray-medium mt-1.5 mb-0">{p.progress}% complete</p>
             </Link>

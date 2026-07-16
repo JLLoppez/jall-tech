@@ -1,5 +1,5 @@
 /**
- * Original abstract artwork \u2014 a stylized Cape Town skyline with Table
+ * Original abstract artwork — a stylized Cape Town skyline with Table
  * Mountain's flat silhouette, built entirely from vector shapes in the
  * brand palette. This is NOT stock photography and isn't meant to pass as
  * such; it's a license-free placeholder for visual richness until real,
@@ -34,7 +34,7 @@ export default function AbstractSkyline({ className = '' }: { className?: string
         <rect x="966" y="210" width="18" height="90" />
         <rect x="992" y="240" width="24" height="60" />
       </g>
-      {/* Gold accent \u2014 a rising sun / horizon arc behind the mountain */}
+      {/* Gold accent — a rising sun / horizon arc behind the mountain */}
       <circle cx="380" cy="165" r="46" fill="#D4A017" opacity="0.35" />
     </svg>
   );

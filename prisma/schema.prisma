@@ -23,6 +23,20 @@ model User {
   role         Role      @default(CLIENT)
   createdAt    DateTime  @default(now())
   projects     Project[]
+  resetTokens  PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  // SHA-256 hash of the token sent to the user, never the raw token itself —
+  // this way a leaked/read-only database dump can't be used to reset accounts.
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 enum ProjectStatus {

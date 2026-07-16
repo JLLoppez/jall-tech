@@ -23,7 +23,7 @@ export default function ConfirmDeleteButton({
           });
         }
       }}
-      className="text-danger hover:bg-red-50 p-1.5 rounded-md transition-colors disabled:opacity-50"
+      className="text-danger hover:bg-red-50 hover:scale-110 p-1.5 rounded-md transition-all duration-150 disabled:opacity-50 disabled:scale-100"
       aria-label="Delete"
     >
       {isPending ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}

@@ -1,59 +1,65 @@
 import type { Config } from 'tailwindcss';
 
 const config: Config = {
-  content: [
-    './src/app/**/*.{ts,tsx}',
-    './src/components/**/*.{ts,tsx}'
-  ],
+  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
   theme: {
     container: {
       center: true,
       padding: '1.5rem',
-      screens: { '2xl': '1200px' }
+      screens: { '2xl': '1280px' }
     },
     extend: {
       colors: {
-        midnight: '#0B2346',
-        'deep-navy': '#102A56',
+        midnight: '#0B1B33',
+        'deep-navy': '#08152B',
+        sky: '#3B82F6',
         gold: {
           DEFAULT: '#D4A017',
-          50: '#FFFBEB',
-          100: '#FDF0D5',
-          600: '#B8860F'
+          50: '#FBF4E0',
+          100: '#F3E1AE',
+          600: '#B3830F'
         },
-        sky: '#2563EB',
-        'gray-light': '#F5F7FA',
-        'gray-medium': '#687280',
-        'gray-dark': '#1F2937',
-        success: '#22C55E',
-        warning: '#F59E0B',
-        danger: '#EF4444',
-        info: '#2563EB'
+        'gray-light': '#F5F6F8',
+        'gray-medium': '#8A93A3',
+        'gray-dark': '#3C4353',
+        success: '#15803D',
+        danger: '#DC2626'
       },
       fontFamily: {
-        heading: ['var(--font-poppins)', 'Segoe UI', 'Arial', 'sans-serif'],
-        body: ['var(--font-inter)', 'Segoe UI', 'Arial', 'sans-serif'],
-        mono: ['var(--font-jetbrains)', 'Courier New', 'monospace']
+        heading: ['var(--font-heading)', 'system-ui', 'sans-serif'],
+        body: ['var(--font-body)', 'system-ui', 'sans-serif']
       },
-      borderRadius: {
-        sm: '4px',
-        md: '6px',
-        lg: '12px',
-        xl: '16px',
-        '2xl': '20px'
+      fontSize: {
+        h1: ['2.75rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
+        h2: ['2rem', { lineHeight: '1.15', letterSpacing: '-0.01em' }],
+        h3: ['1.375rem', { lineHeight: '1.3' }],
+        h4: ['1.125rem', { lineHeight: '1.4' }]
       },
       boxShadow: {
-        sm: '0 1px 3px rgba(11, 35, 70, 0.06)',
-        md: '0 4px 12px rgba(11, 35, 70, 0.08)',
-        lg: '0 10px 25px rgba(11, 35, 70, 0.10)',
-        xl: '0 20px 45px rgba(11, 35, 70, 0.14)'
+        'gold-glow': '0 8px 24px -6px rgba(212, 160, 23, 0.45)'
       },
-      spacing: {
-        18: '4.5rem',
-        22: '5.5rem'
+      transitionTimingFunction: {
+        smooth: 'cubic-bezier(0.22, 1, 0.36, 1)'
       },
-      maxWidth: {
-        container: '1200px'
+      keyframes: {
+        'fade-in': { from: { opacity: '0' }, to: { opacity: '1' } },
+        'fade-in-up': {
+          from: { opacity: '0', transform: 'translateY(12px)' },
+          to: { opacity: '1', transform: 'translateY(0)' }
+        },
+        'fade-in-down': {
+          from: { opacity: '0', transform: 'translateY(-8px)' },
+          to: { opacity: '1', transform: 'translateY(0)' }
+        },
+        'scale-in': { from: { transform: 'scaleX(0)' }, to: { transform: 'scaleX(1)' } },
+        shimmer: { '0%': { backgroundPosition: '100% 0' }, '100%': { backgroundPosition: '0 0' } }
+      },
+      animation: {
+        'fade-in': 'fade-in 0.4s ease-out both',
+        'fade-in-up': 'fade-in-up 0.5s ease-out both',
+        'fade-in-down': 'fade-in-down 0.25s ease-out both',
+        'scale-in': 'scale-in 0.25s ease-out both',
+        shimmer: 'shimmer 1.5s infinite linear'
       }
     }
   },

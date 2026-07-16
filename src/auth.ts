@@ -2,12 +2,21 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
+import { loginSchema } from '@/lib/schemas';
+import { authConfig } from '@/auth.config';
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-  session: { strategy: 'jwt' },
-  pages: {
-    signIn: '/admin/login'
-  },
+// A pre-computed bcrypt hash of a value nobody will ever type, used only so
+// that a login with an unknown email still pays the cost of a bcrypt compare.
+// Without this, "unknown email" responds faster than "wrong password", which
+// lets an attacker enumerate valid admin/client emails by timing the API.
+const DUMMY_HASH = '$2a$12$CwTycUXWue0Thq9StjUM0uJ8fJvW/oq9AVpEHK.rwvEV1CtDcIu5W';
+
+// This file (unlike auth.config.ts) pulls in Prisma and bcrypt, so it must
+// only ever be imported from Node.js-runtime code — API routes, Server
+// Components, and Server Actions. Middleware imports auth.config.ts instead;
+// see the comment there for why.
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   providers: [
     Credentials({
       name: 'Credentials',
@@ -16,39 +25,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
-        const email = typeof credentials?.email === 'string' ? credentials.email : undefined;
-        const password = typeof credentials?.password === 'string' ? credentials.password : undefined;
-        if (!email || !password) return null;
+        const parsed = loginSchema.safeParse(credentials);
+        if (!parsed.success) return null;
 
+        const email = parsed.data.email.toLowerCase().trim();
         const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) return null;
 
-        const isValid = await bcrypt.compare(password, user.passwordHash);
-        if (!isValid) return null;
+        const isValid = await bcrypt.compare(parsed.data.password, user?.passwordHash ?? DUMMY_HASH);
+        if (!user || !isValid) return null;
 
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role
-        };
+        return { id: user.id, email: user.email, name: user.name, role: user.role };
       }
     })
   ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id as string;
-        token.role = user.role;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id;
-        session.user.role = token.role;
-      }
-      return session;
-    }
-  }
+  secret: process.env.AUTH_SECRET
 });

@@ -11,8 +11,11 @@
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading font-bold text-midnight;
-    letter-spacing: -0.01em;
   }
+  h1 { @apply text-h1; }
+  h2 { @apply text-h2; }
+  h3 { @apply text-h3; }
+  h4, h5, h6 { @apply text-h4; }
   ::selection {
     @apply bg-gold text-midnight;
   }
@@ -22,29 +25,44 @@
   a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
     @apply ring-2 ring-sky ring-offset-2 rounded-sm;
   }
+
+  /* Respect the user's motion preference: strip animations/transitions down
+     to instant, rather than just shortening them, for anyone who has asked
+     their OS for reduced motion. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center gap-2 font-heading font-semibold text-sm rounded-lg px-6 py-3 transition-all duration-150 disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 font-heading font-semibold text-sm rounded-lg px-6 py-3 transition-all duration-200 ease-smooth disabled:opacity-50 disabled:pointer-events-none active:scale-[0.97];
   }
   .btn-primary {
-    @apply btn bg-midnight text-white hover:bg-deep-navy shadow-sm hover:shadow-md;
+    @apply btn bg-midnight text-white hover:bg-deep-navy shadow-sm hover:shadow-lg hover:-translate-y-0.5;
   }
   .btn-secondary {
-    @apply btn bg-gold text-midnight hover:bg-gold-600 shadow-sm hover:shadow-md;
+    @apply btn bg-gold text-midnight hover:bg-gold-600 shadow-sm hover:shadow-gold-glow hover:-translate-y-0.5;
   }
   .btn-outline {
-    @apply btn border border-midnight text-midnight hover:bg-midnight hover:text-white bg-transparent;
+    @apply btn border border-midnight text-midnight hover:bg-midnight hover:text-white bg-transparent hover:-translate-y-0.5;
   }
   .btn-ghost {
     @apply btn text-midnight hover:bg-gray-light bg-transparent;
   }
   .badge {
-    @apply inline-flex items-center gap-1.5 font-heading font-semibold text-xs px-3 py-1 rounded-full;
+    @apply inline-flex items-center gap-1.5 font-heading font-semibold text-xs px-3 py-1 rounded-full transition-colors duration-200;
   }
   .card {
-    @apply bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200;
+    @apply bg-white border border-gray-100 rounded-xl shadow-sm transition-all duration-300 ease-smooth;
+  }
+  .card-hover {
+    @apply hover:shadow-lg hover:-translate-y-1 hover:border-gray-200;
   }
   .eyebrow {
     @apply inline-flex items-center font-heading font-semibold text-xs tracking-widest uppercase text-gold-600 bg-gold-50 border border-gold-100 px-3.5 py-1.5 rounded-full mb-4;
@@ -53,7 +71,28 @@
     @apply block text-sm font-heading font-semibold text-midnight mb-1.5;
   }
   .field-input {
-    @apply w-full border border-gray-200 rounded-md px-3.5 py-2.5 text-sm bg-white focus:border-sky;
+    @apply w-full border border-gray-200 rounded-md px-3.5 py-2.5 text-sm bg-white transition-all duration-150 focus:border-sky focus:ring-2 focus:ring-sky/15;
+  }
+  .lead {
+    @apply text-base md:text-lg text-gray-medium leading-relaxed;
+  }
+  .section {
+    @apply py-16 md:py-24;
+  }
+  .section-tight {
+    @apply py-10 md:py-14;
+  }
+  .section-head {
+    @apply max-w-2xl mb-12;
+  }
+  .section-head.center {
+    @apply text-center;
+  }
+  .prose-content p {
+    @apply text-gray-dark leading-relaxed;
+  }
+  .prose-content h3 {
+    @apply text-lg;
   }
   .admin-table {
     @apply w-full text-sm border-collapse;
@@ -63,5 +102,20 @@
   }
   .admin-table td {
     @apply border-b border-gray-100 px-4 py-3 align-middle;
+  }
+  .admin-table tbody tr {
+    @apply transition-colors duration-150 hover:bg-gray-light/60;
+  }
+
+  /* Skeleton loading shimmer, for future async loading states */
+  .skeleton {
+    @apply relative overflow-hidden bg-gray-light rounded-md animate-shimmer;
+    background-image: linear-gradient(
+      90deg,
+      theme('colors.gray-light') 25%,
+      #ECEEF2 37%,
+      theme('colors.gray-light') 63%
+    );
+    background-size: 400% 100%;
   }
 }

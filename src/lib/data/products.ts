@@ -4,70 +4,76 @@ export type Product = {
   tagline: string;
   summary: string;
   industry: string;
-  status: 'Live' | 'In Development' | 'Beta';
-  color: string; // accent hex used for this product's badge
   icon: string;
+  color: string;
+  status: 'Live' | 'Beta' | 'In Development';
 };
 
 export const products: Product[] = [
   {
     slug: 'journeybook',
     name: 'JourneyBook',
-    tagline: 'Travel Intelligently',
-    summary: 'Smart travel planning and booking platform with real-time flight search and itinerary management.',
-    industry: 'Tourism',
-    status: 'In Development',
-    color: '#2563EB',
-    icon: 'Plane'
+    tagline: 'Travel planning, simplified',
+    summary:
+      'A collaborative trip-planning app that turns scattered links, bookings, and ideas into one shared itinerary.',
+    industry: 'Travel & Consumer',
+    icon: 'MapPinned',
+    color: '#3B82F6',
+    status: 'Live'
   },
   {
     slug: 'capeverse',
     name: 'Capeverse',
-    tagline: 'Explore Limitlessly',
-    summary: 'Destination discovery and luxury tourism ecosystem for Cape Town and beyond, with AI-powered recommendations.',
-    industry: 'Tourism',
-    status: 'In Development',
-    color: '#0EA5A5',
-    icon: 'Compass'
+    tagline: 'Local discovery for Cape Town',
+    summary:
+      'A curated guide to events, restaurants, and experiences in Cape Town, built for both locals and visitors.',
+    industry: 'Local Discovery',
+    icon: 'Compass',
+    color: '#D4A017',
+    status: 'Beta'
   },
   {
     slug: 'voices-of-africa',
     name: 'Voices of Africa',
-    tagline: 'Our Stories. Our Heritage.',
-    summary: 'A platform preserving African oral history, languages, and heritage through AI-assisted transcription and storytelling.',
-    industry: 'Culture & Heritage',
-    status: 'In Development',
-    color: '#7C3AED',
-    icon: 'Mic'
+    tagline: 'Stories from across the continent',
+    summary:
+      'A publishing platform giving African writers and journalists a home for long-form storytelling.',
+    industry: 'Media & Publishing',
+    icon: 'Mic2',
+    color: '#15803D',
+    status: 'Beta'
   },
   {
     slug: 'blom',
     name: 'Blom',
-    tagline: 'Nature. Nurture. Life.',
-    summary: 'A hydration and wellness companion app that helps households build healthier daily habits.',
-    industry: 'Health & Wellness',
-    status: 'Beta',
-    color: '#22C55E',
-    icon: 'Droplet'
+    tagline: 'AI-assisted plant care',
+    summary:
+      'Computer-vision plant identification and care reminders for home gardeners, powered by our in-house vision models.',
+    industry: 'Consumer / AI',
+    icon: 'Sprout',
+    color: '#16A34A',
+    status: 'In Development'
   },
   {
     slug: 'family-finance-platform',
     name: 'Family Finance Platform',
-    tagline: 'Plan Together. Grow Together.',
-    summary: 'Family budgeting, saving, and financial management tools built for shared household goals.',
-    industry: 'Finance',
-    status: 'In Development',
-    color: '#D4A017',
-    icon: 'PiggyBank'
+    tagline: 'Household budgeting that fits real families',
+    summary:
+      'Shared budgeting and savings goals for households, with permissions built for parents, teens, and partners.',
+    industry: 'Fintech',
+    icon: 'PiggyBank',
+    color: '#0B1B33',
+    status: 'In Development'
   },
   {
-    slug: 'jall-technologies-services',
-    name: 'Jall Technologies Services',
-    tagline: 'Custom Solutions, Built Right',
-    summary: 'Our custom software and technology consulting arm — for clients who need a dedicated build, not a product.',
-    industry: 'Cross-industry',
-    status: 'Live',
-    color: '#0B2346',
-    icon: 'Building2'
+    slug: 'lumo-pay',
+    name: 'Lumo Pay',
+    tagline: 'Payments infrastructure for small merchants',
+    summary:
+      'A lightweight payments and invoicing layer for small businesses, built to work reliably on patchy connectivity.',
+    industry: 'Fintech',
+    icon: 'CreditCard',
+    color: '#B3830F',
+    status: 'In Development'
   }
 ];

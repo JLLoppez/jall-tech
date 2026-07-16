@@ -6,6 +6,7 @@ import ServiceCard from '@/components/ServiceCard';
 import ProductCard from '@/components/ProductCard';
 import StatCard from '@/components/StatCard';
 import AbstractSkyline from '@/components/AbstractSkyline';
+import Reveal from '@/components/Reveal';
 
 export default function HomePage() {
   return (
@@ -24,16 +25,19 @@ export default function HomePage() {
         <AbstractSkyline className="absolute bottom-0 left-0 w-full h-32 sm:h-44 text-deep-navy/60 pointer-events-none" />
         <div className="container relative py-24 md:py-32">
           <div className="max-w-3xl">
-            <span className="eyebrow">Software · AI · Cloud · FinTech</span>
-            <h1 className="text-white mb-6">
+            <span className="eyebrow animate-fade-in-up">Software · AI · Cloud · FinTech</span>
+            <h1 className="text-white mb-6 animate-fade-in-up" style={{ animationDelay: '80ms' }}>
               Innovate. Build. <span className="text-gold">Empower.</span>
             </h1>
-            <p className="text-lg text-white/70 max-w-2xl mb-8 leading-relaxed">
+            <p
+              className="text-lg text-white/70 max-w-2xl mb-8 leading-relaxed animate-fade-in-up"
+              style={{ animationDelay: '160ms' }}
+            >
               Jall Technologies designs and builds custom software, AI-powered products, and
               cloud platforms for startups, enterprises, governments, and NGOs across Africa
               and beyond.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 animate-fade-in-up" style={{ animationDelay: '240ms' }}>
               <Link href="/contact" className="btn-secondary">
                 Start a Project <ArrowRight size={16} />
               </Link>
@@ -47,28 +51,30 @@ export default function HomePage() {
 
       {/* Stats band */}
       <section className="bg-deep-navy">
-        <div className="container py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+        <Reveal className="container py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
           <StatCard value="9" label="Core Service Lines" />
           <StatCard value="6" label="Products in Build" />
           <StatCard value="10+" label="Industries Served" />
           <StatCard value="100%" label="African-Rooted, Globally Minded" />
-        </div>
+        </Reveal>
       </section>
 
       {/* Services overview */}
       <section className="section">
         <div className="container">
-          <div className="section-head center mx-auto text-center">
+          <Reveal className="section-head center mx-auto text-center">
             <span className="eyebrow">What We Do</span>
             <h2>Full-stack technology, end to end</h2>
             <p className="lead">
               From first architecture decision to production monitoring, we cover the whole
               lifecycle — so you work with one accountable partner, not a chain of vendors.
             </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {services.slice(0, 6).map((service) => (
-              <ServiceCard key={service.slug} service={service} />
+          </Reveal>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.slice(0, 6).map((service, i) => (
+              <Reveal key={service.slug} delay={i * 60}>
+                <ServiceCard service={service} />
+              </Reveal>
             ))}
           </div>
           <div className="text-center mt-10">
@@ -82,17 +88,19 @@ export default function HomePage() {
       {/* Products showcase */}
       <section className="section bg-gray-light">
         <div className="container">
-          <div className="section-head center mx-auto text-center">
+          <Reveal className="section-head center mx-auto text-center">
             <span className="eyebrow">Our Products</span>
             <h2>Platforms we&apos;re building in-house</h2>
             <p className="lead">
               Alongside client work, we build our own products — proof that we build what we
               preach.
             </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product) => (
-              <ProductCard key={product.slug} product={product} />
+          </Reveal>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {products.map((product, i) => (
+              <Reveal key={product.slug} delay={i * 60}>
+                <ProductCard product={product} />
+              </Reveal>
             ))}
           </div>
         </div>
@@ -101,7 +109,7 @@ export default function HomePage() {
       {/* Why us */}
       <section className="section">
         <div className="container grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div>
+          <Reveal>
             <span className="eyebrow">Why Jall Technologies</span>
             <h2 className="mb-6">Built for teams who need it done right, not just done fast</h2>
             <ul className="space-y-4">
@@ -111,14 +119,17 @@ export default function HomePage() {
                 'AI integration experience, not just AI marketing',
                 'African market context paired with global engineering standards'
               ].map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <CheckCircle2 size={20} className="text-gold shrink-0 mt-0.5" />
+                <li
+                  key={item}
+                  className="group flex items-start gap-3 transition-transform duration-200 hover:translate-x-1"
+                >
+                  <CheckCircle2 size={20} className="text-gold shrink-0 mt-0.5 transition-transform duration-200 group-hover:scale-110" />
                   <span className="text-gray-dark">{item}</span>
                 </li>
               ))}
             </ul>
-          </div>
-          <div className="bg-midnight rounded-2xl p-10 text-white">
+          </Reveal>
+          <Reveal delay={120} className="bg-midnight rounded-2xl p-10 text-white">
             <p className="font-heading text-xl mb-6 leading-snug">
               &ldquo;We help startups, businesses, governments, NGOs, and enterprises transform
               ideas into scalable digital solutions across Africa and beyond.&rdquo;
@@ -129,13 +140,13 @@ export default function HomePage() {
               To empower people and organizations through innovative technology that creates
               opportunities and drives sustainable growth.
             </p>
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* CTA banner */}
       <section className="section bg-midnight">
-        <div className="container text-center">
+        <Reveal className="container text-center">
           <h2 className="text-white mb-4">Have a project in mind?</h2>
           <p className="text-white/70 max-w-xl mx-auto mb-8">
             Tell us what you&apos;re building. We&apos;ll reply with next steps within one
@@ -144,7 +155,7 @@ export default function HomePage() {
           <Link href="/contact" className="btn-secondary">
             Get in Touch <ArrowRight size={16} />
           </Link>
-        </div>
+        </Reveal>
       </section>
     </>
   );

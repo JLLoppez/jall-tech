@@ -3,13 +3,18 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { signIn } from 'next-auth/react';
+import Link from 'next/link';
+import { signIn, getSession } from 'next-auth/react';
 import { Loader2, AlertCircle } from 'lucide-react';
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/admin';
+  // Only honor an explicit callbackUrl (set by middleware when it bounced
+  // someone off a protected route). Without one, the destination depends on
+  // *who* just logged in — an admin belongs on /admin, a client on /portal —
+  // so it can't be a single fixed default the way it was before.
+  const explicitCallbackUrl = searchParams.get('callbackUrl');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,20 +26,28 @@ export default function LoginForm() {
     setLoading(true);
     setError('');
 
-    const result = await signIn('credentials', {
-      email,
-      password,
-      redirect: false
-    });
+    try {
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false
+      });
 
-    if (result?.error) {
-      setError('Incorrect email or password.');
+      if (result?.error) {
+        setError('Incorrect email or password.');
+        setLoading(false);
+        return;
+      }
+
+      const session = await getSession();
+      const destination = explicitCallbackUrl || (session?.user.role === 'CLIENT' ? '/portal' : '/admin');
+
+      router.push(destination);
+      router.refresh();
+    } catch {
+      setError('Something went wrong signing you in. Please try again.');
       setLoading(false);
-      return;
     }
-
-    router.push(callbackUrl);
-    router.refresh();
   }
 
   return (
@@ -53,7 +66,12 @@ export default function LoginForm() {
         />
       </div>
       <div>
-        <label htmlFor="password" className="field-label">Password</label>
+        <div className="flex items-center justify-between mb-1.5">
+          <label htmlFor="password" className="field-label mb-0">Password</label>
+          <Link href="/admin/forgot-password" className="text-xs text-sky hover:underline">
+            Forgot password?
+          </Link>
+        </div>
         <input
           id="password"
           type="password"
@@ -61,7 +79,7 @@ export default function LoginForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="field-input"
-          placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+          placeholder="••••••••"
           autoComplete="current-password"
         />
       </div>
