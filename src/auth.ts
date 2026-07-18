@@ -3,7 +3,6 @@ import Credentials from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { loginSchema } from '@/lib/schemas';
-import { authConfig } from '@/auth.config';
 
 // A pre-computed bcrypt hash of a value nobody will ever type, used only so
 // that a login with an unknown email still pays the cost of a bcrypt compare.
@@ -11,12 +10,16 @@ import { authConfig } from '@/auth.config';
 // lets an attacker enumerate valid admin/client emails by timing the API.
 const DUMMY_HASH = '$2a$12$CwTycUXWue0Thq9StjUM0uJ8fJvW/oq9AVpEHK.rwvEV1CtDcIu5W';
 
-// This file (unlike auth.config.ts) pulls in Prisma and bcrypt, so it must
-// only ever be imported from Node.js-runtime code — API routes, Server
-// Components, and Server Actions. Middleware imports auth.config.ts instead;
-// see the comment there for why.
+// NOTE: prior to Next.js 16, this file could not be imported from
+// middleware.ts (Edge Runtime, no Prisma support), so the config was split
+// into an Edge-safe auth.config.ts plus this full version. Next.js 16
+// renamed middleware.ts to proxy.ts and moved it to the Node.js runtime by
+// default, so that split is no longer necessary — proxy.ts now imports this
+// file directly. See src/proxy.ts.
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  ...authConfig,
+  session: { strategy: 'jwt', maxAge: 60 * 60 * 8 }, // 8 hour sessions
+  pages: { signIn: '/admin/login' },
+  trustHost: true,
   providers: [
     Credentials({
       name: 'Credentials',
@@ -38,5 +41,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
     })
   ],
+  callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+      }
+      return session;
+    }
+  },
   secret: process.env.AUTH_SECRET
 });

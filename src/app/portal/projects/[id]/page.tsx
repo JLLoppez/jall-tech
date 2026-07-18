@@ -14,12 +14,13 @@ const statusColor: Record<string, string> = {
   ON_HOLD: 'bg-red-50 text-danger'
 };
 
-export default async function PortalProjectDetailPage({ params }: { params: { id: string } }) {
+export default async function PortalProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await auth();
   const clientId = session!.user.id;
 
   const project = await prisma.project.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { updates: { orderBy: { createdAt: 'desc' } } }
   });
 

@@ -1,20 +1,27 @@
 # Jall Technologies Platform
 
-Marketing site + admin dashboard + client portal, built on Next.js 14 (App Router), Prisma/PostgreSQL, and NextAuth v5.
+Marketing site + admin dashboard + client portal, built on Next.js 16 (App Router), Prisma/PostgreSQL, and Auth.js (next-auth v5).
 
 ## Stack
 
-- **Framework:** Next.js 14 (App Router, Server Actions)
+- **Framework:** Next.js 16 (App Router, Server Actions, Turbopack by default)
 - **Database:** PostgreSQL via Prisma
-- **Auth:** NextAuth v5 (Credentials provider, JWT sessions)
+- **Auth:** Auth.js / next-auth v5 (Credentials provider, JWT sessions)
 - **Email:** Resend
 - **Styling:** Tailwind CSS
 - **Tests:** Vitest + Testing Library
 
+## Upgrade notes (read this if `npm install` or `npm run build` misbehaves)
+
+- **`next-auth` is pinned to the `beta` dist-tag**, not a specific version number. Auth.js v5 has been in beta for a long time and the exact version string changes frequently — pinning a specific number here would just go stale and silently resolve wrong later, which is exactly what caused a build failure in an earlier version of this project (npm couldn't find the pinned beta, fell back to next-auth v4, and v4's bundle isn't Edge-Runtime-safe). If you want a reproducible build, run `npm install` once, then commit the resulting lockfile — don't hand-edit this pin to a specific version unless you've confirmed it exists on npm.
+- **You may need `npm install --legacy-peer-deps`.** next-auth's published `peerDependencies` range hasn't always been updated the same day a new Next.js major ships, so npm may report a peer conflict against Next 16 even though the two work together fine at runtime. If `npm install` fails on a peer dependency error mentioning `next-auth` and `next`, re-run with `--legacy-peer-deps`.
+- **`middleware.ts` is now `src/proxy.ts`.** Next.js 16 renamed the file and — more importantly — moved it from the Edge Runtime to the Node.js runtime by default. That's why `proxy.ts` can import the full `@/auth` (Prisma + bcrypt) directly; on Next.js 14/15, that same import would fail to build, which is why earlier versions of this project split auth config into an Edge-safe half and a full half. If you ever downgrade below Next 16, or explicitly set `export const runtime = 'edge'` on this file, you'll need to reintroduce that split — see the git history for `src/auth.config.ts` if so.
+- **React is on 19.x**, matching what Next 16's App Router expects internally.
+
 ## Getting started
 
 ```bash
-npm install
+npm install                 # add --legacy-peer-deps if it complains about next-auth/next
 cp .env.example .env        # fill in DATABASE_URL and AUTH_SECRET at minimum
 npx prisma migrate dev --name init
 npm run prisma:seed         # creates an admin + demo client account
@@ -30,10 +37,11 @@ Seeded logins (change both before deploying anywhere real):
 
 ```
 src/app/(marketing)   Public site — home, services, products, blog, careers, etc.
-src/app/admin         Admin dashboard (protected by middleware + layout check)
+src/app/admin         Admin dashboard (protected by proxy.ts + layout check)
 src/app/portal        Client portal — clients view their own projects/updates
 src/app/api           Contact form, mobile API, NextAuth handler
 src/lib               Prisma client, auth actions, admin actions, email, schemas
+src/proxy.ts          Route protection (formerly middleware.ts — see Upgrade notes)
 prisma/schema.prisma  Data model
 ```
 

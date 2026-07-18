@@ -7,8 +7,9 @@ import { validateResetToken } from '@/lib/actions/auth';
 export const metadata = { title: 'Reset Password' };
 export const dynamic = 'force-dynamic';
 
-export default async function ResetPasswordPage({ params }: { params: { token: string } }) {
-  const result = await validateResetToken(params.token);
+export default async function ResetPasswordPage({ params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params;
+  const result = await validateResetToken(token);
 
   return (
     <div className="min-h-screen bg-gray-light flex items-center justify-center p-6">
@@ -29,7 +30,7 @@ export default async function ResetPasswordPage({ params }: { params: { token: s
         {result.valid ? (
           <>
             <h1 className="text-center text-xl mb-6">Choose a new password</h1>
-            <ResetPasswordForm token={params.token} />
+            <ResetPasswordForm token={token} />
           </>
         ) : (
           <div className="card p-8 text-center">

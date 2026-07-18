@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server';
-import NextAuth from 'next-auth';
-import { authConfig } from '@/auth.config';
+import { auth } from '@/auth';
 
-// Deliberately built from the Edge-safe authConfig (no providers, no
-// Prisma/bcrypt) rather than importing `auth` from '@/auth' — see the
-// comment in auth.config.ts. This instance can only read/validate the JWT
-// session cookie, which is all middleware needs to do.
-const { auth } = NextAuth(authConfig);
-
+// Renamed from middleware.ts: as of Next.js 16, this file is named
+// proxy.ts and runs on the Node.js runtime by default (previously,
+// middleware.ts always ran on the Edge Runtime). That's why this can now
+// import the full `auth` from '@/auth' directly — the one that pulls in
+// Prisma and bcrypt via the Credentials provider's authorize() callback.
+// On Next.js <16, that same import would fail to build (Prisma's binary
+// query engine can't run on Edge). If you ever downgrade Next.js, or
+// explicitly opt this file into the edge runtime, reintroduce the
+// Edge-safe/full-config split this repo used previously.
 export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
