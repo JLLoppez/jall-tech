@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { Linkedin, Twitter, Github, Facebook, Mail, MapPin } from 'lucide-react';
+import { Mail, MapPin } from 'lucide-react';
 import Logo from './Logo';
 import { products } from '@/lib/data/products';
+import { LinkedInIcon, XIcon, GitHubIcon, FacebookIcon } from './BrandIcons';
 
 const year = new Date().getFullYear();
 
@@ -25,10 +26,10 @@ export default function Footer() {
           </p>
           <div className="flex items-center gap-3 mt-5">
             {[
-              { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
-              { icon: Twitter, href: 'https://twitter.com', label: 'Twitter / X' },
-              { icon: Github, href: 'https://github.com', label: 'GitHub' },
-              { icon: Facebook, href: 'https://facebook.com', label: 'Facebook' }
+              { icon: LinkedInIcon, href: 'https://linkedin.com', label: 'LinkedIn' },
+              { icon: XIcon, href: 'https://twitter.com', label: 'X (Twitter)' },
+              { icon: GitHubIcon, href: 'https://github.com', label: 'GitHub' },
+              { icon: FacebookIcon, href: 'https://facebook.com', label: 'Facebook' }
             ].map(({ icon: Icon, href, label }) => (
               <a
                 key={label}
