@@ -1,6 +1,7 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
+import type { Role } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { loginSchema } from '@/lib/schemas';
 
@@ -50,9 +51,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     session({ session, token }) {
+      // `src/types/next-auth.d.ts` declares `id`/`role` on the JWT
+      // interface via `declare module 'next-auth/jwt'`, but that
+      // augmentation doesn't merge cleanly against every next-auth beta's
+      // own base JWT type (a known pain point — Auth.js v5's types have
+      // shifted structure repeatedly during its long beta, and at least
+      // one shape includes a catch-all `[key: string]: unknown` index
+      // signature that custom fields fall through to when the merge
+      // fails). When that happens, `token.id`/`token.role` type as
+      // `unknown`: assigning INTO them (see the jwt callback above) still
+      // type-checks fine, because anything is assignable to `unknown`, but
+      // reading them back OUT and assigning into the strictly-typed
+      // `session.user.id: string` does not — even though the runtime value
+      // is correct, set two lines up. Cast explicitly here so this doesn't
+      // depend on the augmentation succeeding.
+      const typedToken = token as typeof token & { id: string; role: Role };
       if (session.user) {
-        session.user.id = token.id;
-        session.user.role = token.role;
+        session.user.id = typedToken.id;
+        session.user.role = typedToken.role;
       }
       return session;
     }

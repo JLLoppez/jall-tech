@@ -59,6 +59,8 @@ npm run typecheck
 npm run lint
 ```
 
+Note: `tsconfig.json` excludes `*.test.ts(x)` files from `tsc`, which means `npm run typecheck` (and `next build`'s own internal type-check pass) skip them. This is deliberate: Vitest transforms and runs test files itself via esbuild, independent of `tsc`, so this exclusion has no effect on `npm run test` actually running — it only decouples "does the app type-check" from "do the test files type-check," so a typing quirk in a test file (e.g. around a testing-library matcher's ambient types) can never block a production build the way it plausibly could have otherwise.
+
 ## Production checklist
 
 Things that matter before this goes live, roughly in order of how badly they'd hurt if skipped:
